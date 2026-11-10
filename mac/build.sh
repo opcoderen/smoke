@@ -29,13 +29,23 @@ codesign --force --deep --sign - "$APP" 2>/dev/null || true
 # zip：跨机传输备用（签名与权限完整保留）
 ditto -c -k --sequesterRsrc --keepParent "$APP" "build/SmokeLog-$VERSION.zip" 2>/dev/null || true
 
-# dmg：对外分发用（拖拽安装）
-STAGE="build/dmg-stage"
-rm -rf "$STAGE" && mkdir -p "$STAGE"
-cp -R "$APP" "$STAGE/"
-ln -s /Applications "$STAGE/Applications"
-hdiutil create -volname "SmokeLog" -srcfolder "$STAGE" -ov -format UDZO -quiet "build/SmokeLog-$VERSION.dmg"
-rm -rf "$STAGE"
+# dmg：对外分发用（背景图 + 拖拽引导）
+if [ ! -f build/dmg-bg.png ]; then
+    swift tools/makedmgbg.swift build/dmg-bg.png
+fi
+if python3 -c "import dmgbuild" >/dev/null 2>&1; then
+    python3 -m dmgbuild -s dmg-settings.py \
+        -D app="$APP" -D background="build/dmg-bg.png" \
+        "SmokeLog" "build/SmokeLog-$VERSION.dmg" >/dev/null
+else
+    # 没有 dmgbuild 时退化为简单 DMG（无背景图）
+    STAGE="build/dmg-stage"
+    rm -rf "$STAGE" && mkdir -p "$STAGE"
+    cp -R "$APP" "$STAGE/"
+    ln -s /Applications "$STAGE/Applications"
+    hdiutil create -volname "SmokeLog" -srcfolder "$STAGE" -ov -format UDZO -quiet "build/SmokeLog-$VERSION.dmg"
+    rm -rf "$STAGE"
+fi
 
 # 顺带算一下校验和，发版时可以贴到 Release 说明里
 (cd build && shasum -a 256 "SmokeLog-$VERSION.dmg" | tee "SmokeLog-$VERSION.dmg.sha256")

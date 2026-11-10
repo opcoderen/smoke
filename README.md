@@ -67,6 +67,9 @@ cd mac
 ./build.sh        # 产出 build/SmokeLog.app（arm64 + x86_64 双架构）、SmokeLog-<版本>.dmg 和 .zip
 ```
 
+> 想要带背景图和拖拽引导的安装界面，先装一次 `pip3 install --user dmgbuild`；
+> 没装也能打包，只是 DMG 里没有引导画面。
+
 **使用**：
 
 1. 打开 App，菜单栏出现香烟图标；首次点击前先在面板里点齿轮设置：
