@@ -1,0 +1,16 @@
+name = "smoke-log"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+# D1 数据库绑定
+# 先在 Cloudflare Dashboard 创建 D1 数据库（或 npx wrangler d1 create smoke-log），
+# 然后把返回的 database_id 填到下面。
+# 建表：在 D1 控制台执行 schema.sql（或 npx wrangler d1 execute smoke-log --file=./schema.sql --remote）
+[[d1_databases]]
+binding = "DB"
+database_name = "smoke-log"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+
+# 可选：绑定自定义域名（先在 Cloudflare 托管你的域名，再去掉注释并改成自己的域名）
+# routes = [{ pattern = "your-domain.example.com", custom_domain = true }]

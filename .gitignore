@@ -1,0 +1,16 @@
+# Mac 构建产物
+.build/
+build/
+*.xcodeproj
+
+# 系统/编辑器
+.DS_Store
+*.swp
+
+# Node / wrangler
+node_modules/
+.wrangler/
+.dev.vars
+
+# 本地数据（切勿提交个人记录）
+data/seed.sql
