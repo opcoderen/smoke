@@ -16,7 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appMenuItem = NSMenuItem()
         let appMenu = NSMenu()
         appMenu.addItem(
-            withTitle: "退出 抽烟记录",
+            withTitle: "退出 SmokeLog",
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         )

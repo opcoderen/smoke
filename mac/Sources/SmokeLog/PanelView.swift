@@ -168,7 +168,7 @@ struct PanelView: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
-            .help("退出 抽烟记录（⌘Q 也可以）")
+            .help("退出 SmokeLog（⌘Q 也可以）")
         }
     }
 }

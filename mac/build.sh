@@ -1,5 +1,5 @@
 #!/bin/bash
-# 编译并打包成可直接双击运行的 .app（Universal：Apple Silicon + Intel）
+# 编译并打包 SmokeLog（Universal：Apple Silicon + Intel），产出 .app / .zip / .dmg
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -7,7 +7,8 @@ cd "$(dirname "$0")"
 swift build -c release --disable-sandbox --arch arm64 --arch x86_64
 BIN_DIR="$(swift build -c release --disable-sandbox --arch arm64 --arch x86_64 --show-bin-path)"
 
-APP="build/抽烟记录.app"
+VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)"
+APP="build/SmokeLog.app"
 rm -rf build
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
@@ -22,12 +23,26 @@ if [ ! -f Resources/AppIcon.icns ]; then
 fi
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
-# ad-hoc 签名（必须，否则另一台 Mac 上会被 Gatekeeper 拦）
+# ad-hoc 签名（必须，否则另一台 Mac 上会被 Gatekeeper 直接拦）
 codesign --force --deep --sign - "$APP" 2>/dev/null || true
 
-# 额外打一个 zip：跨机传输时用它，签名和权限能完整保留
-ditto -c -k --sequesterRsrc --keepParent "$APP" "build/抽烟记录.zip" 2>/dev/null || true
+# zip：跨机传输备用（签名与权限完整保留）
+ditto -c -k --sequesterRsrc --keepParent "$APP" "build/SmokeLog-$VERSION.zip" 2>/dev/null || true
 
-echo "打包完成：$APP"
+# dmg：对外分发用（拖拽安装）
+STAGE="build/dmg-stage"
+rm -rf "$STAGE" && mkdir -p "$STAGE"
+cp -R "$APP" "$STAGE/"
+ln -s /Applications "$STAGE/Applications"
+hdiutil create -volname "SmokeLog" -srcfolder "$STAGE" -ov -format UDZO -quiet "build/SmokeLog-$VERSION.dmg"
+rm -rf "$STAGE"
+
+# 顺带算一下校验和，发版时可以贴到 Release 说明里
+(cd build && shasum -a 256 "SmokeLog-$VERSION.dmg" | tee "SmokeLog-$VERSION.dmg.sha256")
+
+echo ""
+echo "打包完成：${APP}（v${VERSION}）"
 lipo -info "$APP/Contents/MacOS/SmokeLog" | sed 's/^/  /'
-echo "分发包：build/抽烟记录.zip"
+echo "分发包："
+echo "  build/SmokeLog-${VERSION}.dmg"
+echo "  build/SmokeLog-${VERSION}.zip"

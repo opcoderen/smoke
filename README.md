@@ -54,11 +54,17 @@ wrangler deploy
 
 ## Mac 菜单栏 App
 
-**构建**（需要 Xcode Command Line Tools）：
+**下载安装（推荐）**：到 [Releases](https://github.com/opcoderen/smoke/releases) 下载 `SmokeLog-<版本>.dmg`，
+双击打开，把 `SmokeLog.app` 拖进 `Applications` 即可。
+
+> App 是 ad-hoc 签名（未走 Apple 付费开发者公证），首次打开若提示「无法验证开发者」：
+> 在 Finder 里**右键 → 打开**，或执行 `xattr -dr com.apple.quarantine /Applications/SmokeLog.app`。
+
+**从源码构建**（需要 Xcode Command Line Tools）：
 
 ```bash
 cd mac
-./build.sh        # 产出 build/抽烟记录.app（arm64 + x86_64 双架构）
+./build.sh        # 产出 build/SmokeLog.app（arm64 + x86_64 双架构）、SmokeLog-<版本>.dmg 和 .zip
 ```
 
 **使用**：

@@ -182,7 +182,7 @@ final class StatusBarController: NSObject {
         }
         let hosting = NSHostingController(rootView: SettingsView())
         let win = NSWindow(contentViewController: hosting)
-        win.title = "抽烟记录 · 设置"
+        win.title = "SmokeLog · 设置"
         win.styleMask = [.titled, .closable]
         win.isReleasedWhenClosed = false
         win.center()
